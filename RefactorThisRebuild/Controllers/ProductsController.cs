@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RefactorThisRebuild.Models;
 using System;
 using System.Collections.Generic;
@@ -72,16 +73,27 @@ namespace RefactorThisRebuild.Controllers
         public IActionResult Put(Guid id, Product product)
         {
 
+
+
+
             Product orig = _context.Products.Where(i => i.Id == id).FirstOrDefault();
 
             if (orig == null)
             {
                 return NotFound();
             }
-            orig.Name = product.Name;
-            orig.Description = product.Description;
-            orig.Price = product.Price;
-            orig.DeliveryPrice = product.DeliveryPrice;
+            orig.Name = product.Name == null ? orig.Name : product.Name;
+            orig.Description = product.Description == null ? orig.Description : product.Description;
+            orig.Price = product.Price == 0 ? orig.Price : product.Price;
+            orig.DeliveryPrice = product.DeliveryPrice == 0 ? orig.DeliveryPrice : product.DeliveryPrice;
+
+
+            var serilaizeJson = JsonConvert.SerializeObject(orig, Formatting.None,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
+            var result = JsonConvert.DeserializeObject<dynamic>(serilaizeJson);
 
             _context.SaveChanges();
 
@@ -107,6 +119,7 @@ namespace RefactorThisRebuild.Controllers
             return Ok();
 
         }
+
 
 
     }

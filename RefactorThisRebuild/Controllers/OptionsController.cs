@@ -74,8 +74,11 @@ namespace RefactorThisRebuild.Controllers
                 return NotFound();
             }
 
-            origOption.Name = option.Name;
-            origOption.Description = option.Description;
+            origOption.Name = option.Name == null ? origOption.Name : option.Name;
+            origOption.Description = option.Description == null ? origOption.Description : option.Description;
+
+
+
 
 
             _context.SaveChanges();
